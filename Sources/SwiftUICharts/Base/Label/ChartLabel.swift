@@ -11,9 +11,9 @@ public enum ChartLabelType {
 public struct ChartLabel: View {
     @EnvironmentObject var chartValue: ChartValue
     @State var textToDisplay:String = ""
-    private var textFormat: String
     private var title: String
-
+    private var valueFormatter: NumberFormatter = NumberFormatter()
+  
     private var labelSize: CGFloat {
         switch labelType {
         case .title:
@@ -62,10 +62,13 @@ public struct ChartLabel: View {
     }
 
     public init (_ title: String,
-                 titleFormat: String = "%.01f",
+                 valueSuffix: String,
                  type: ChartLabelType = .title) {
         self.title = title
-        self.textFormat = titleFormat
+        self.valueFormatter.maximumFractionDigits = 0
+        self.valueFormatter.numberStyle = .decimal
+        self.valueFormatter.negativeSuffix = valueSuffix
+        self.valueFormatter.positiveSuffix = valueSuffix
         labelType = type
     }
 
@@ -80,7 +83,8 @@ public struct ChartLabel: View {
                     self.textToDisplay = self.title
                 }
                 .onReceive(self.chartValue.objectWillChange) { _ in
-                  self.textToDisplay = self.chartValue.interactionInProgress ? String(format: self.textFormat, self.chartValue.currentValue) : self.title
+                  self.textToDisplay = self.chartValue.interactionInProgress ?
+                    (valueFormatter.string(from: NSNumber(value: self.chartValue.currentValue)) ?? self.title) : self.title
                 }
             if !self.chartValue.interactionInProgress {
                 Spacer()
