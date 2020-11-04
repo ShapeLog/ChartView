@@ -20,7 +20,7 @@ public struct BarChartRow: View {
 
     public var body: some View {
         GeometryReader { geometry in
-            HStack(alignment: .bottom,
+            HStack(alignment: .top,
                    spacing: (geometry.frame(in: .local).width - Constant.spacing) / CGFloat(self.chartData.data.count * 3)) {
                     ForEach(0..<self.chartData.data.count, id: \.self) { index in
                         BarChartCell(value: self.normalizedValue(index: index),
